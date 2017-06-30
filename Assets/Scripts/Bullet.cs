@@ -46,16 +46,8 @@ public class Bullet : MonoBehaviour, IBullet
         {
             if (overlaps[i].gameObject != owner)
             {
-                INeedsDirectionDamagedFrom[] componentsThatNeedDirection = overlaps[i].GetComponents<INeedsDirectionDamagedFrom>();
-                foreach (INeedsDirectionDamagedFrom componentThatNeedsDirection in componentsThatNeedDirection)
-                {
-                    componentThatNeedsDirection.directionDamagedFrom = transform.right.Vector2().normalized;
-                }
-                IDamageable damageable = overlaps[i].GetComponent<IDamageable>();
-                if (damageable != null)
-                {
-                    damageable.Damage(damage);
-                }
+                overlaps[i].gameObject.SetDamageDirection(transform.right.Vector2().normalized);
+                overlaps[i].gameObject.DamageIfDamageable(damage);
             }
         }
         if (numOfOverlaps > 0)

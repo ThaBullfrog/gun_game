@@ -20,7 +20,7 @@ public class CharacterSpriteController : MonoBehaviour, IDirectionFacing
     private float xPositionWhenLastAnimated;
     private float distanceBetweenAnimations = 35f;
     private float distanceSinceLastAnimated { get { return Mathf.Abs(transform.position.x - xPositionWhenLastAnimated); } }
-    private Vector3 prevPosition;
+    private Rigidbody2D rb;
 
     public event System.Action updateGunPosition;
     public Sprite sprite { get{ return spriteRenderer.sprite; } private set { spriteRenderer.sprite = value; } }
@@ -68,10 +68,10 @@ public class CharacterSpriteController : MonoBehaviour, IDirectionFacing
         groundDetector = GetComponent<IGroundDetector>();
         input = GetComponent<ICharacterInput>();
         characetAudio = GetComponent<ICharacterAudio>();
-        prevPosition = transform.position;
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         if (input != null && input.shooting)
         {
@@ -95,12 +95,11 @@ public class CharacterSpriteController : MonoBehaviour, IDirectionFacing
             updateGunPosition();
         }
         prevOnGround = onGround;
-        prevPosition = transform.position;
     }
     
     private void AnimateOnGround()
     {
-        if (prevPosition.x == transform.position.x)
+        if (rb != null && rb.velocity.x == 0f)
         {
             sprite = neutralSprite;
             UpdateXPositionWhenLastAnimated();
@@ -133,13 +132,16 @@ public class CharacterSpriteController : MonoBehaviour, IDirectionFacing
 
     private void FaceInDirectionOfMovement()
     {
-        if (transform.position.x > prevPosition.x)
+        if (rb != null)
         {
-            FaceRight();
-        }
-        if (transform.position.x < prevPosition.x)
-        {
-            FaceLeft();
+            if (rb.velocity.x > 0f)
+            {
+                FaceRight();
+            }
+            if (rb.velocity.x < 0f)
+            {
+                FaceLeft();
+            }
         }
     }
 

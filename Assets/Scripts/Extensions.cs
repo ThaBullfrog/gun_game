@@ -119,4 +119,31 @@ public static class Extensions
         returnVal.spatialBlend = 0f;
         return returnVal;
     }
+
+    public static void DamageIfDamageable(this GameObject obj, int amount)
+    {
+        IDamageable damageable = obj.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            damageable.Damage(amount);
+        }
+    }
+
+    public static void KillIfDamageable(this GameObject obj)
+    {
+        IDamageable damageable = obj.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            damageable.Kill();
+        }
+    }
+
+    public static void SetDamageDirection(this GameObject obj, Vector2 direction)
+    {
+        INeedsDirectionDamagedFrom[] componentsThatNeedDirection = obj.GetComponents<INeedsDirectionDamagedFrom>();
+        foreach (INeedsDirectionDamagedFrom componentThatNeedsDirection in componentsThatNeedDirection)
+        {
+            componentThatNeedsDirection.directionDamagedFrom = direction;
+        }
+    }
 }

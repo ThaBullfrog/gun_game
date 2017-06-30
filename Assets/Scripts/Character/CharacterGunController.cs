@@ -48,13 +48,20 @@ public class CharacterGunController : MonoBehaviour
         {
             pivot.right = aimDirection * pivot.parent.localScale.x;
         }
+        if (input != null && !testingAim && input.shooting)
+        {
+            if (Time.time > timeWhenCanShootAgain)
+            {
+                Shoot(aimDirection);
+            }
+        }
         if (Time.time < kickUntilThisTime)
         {
             pivot.position += aimDirection * -kickDistance;
         }
     }
 
-    private void LateUpdate()
+    /*private void LateUpdate()
     {
         Vector3 aimDirection = GetAimDirection();
         if (input != null && input.shooting)
@@ -64,7 +71,7 @@ public class CharacterGunController : MonoBehaviour
                 Shoot(aimDirection);
             }
         }
-    }
+    }*/
 
     private void ResetToRootTransform()
     {

@@ -13,6 +13,7 @@ public class EntityNazi : EntityCharacter
         characterGunController.bulletPrefab = GetAsset<Transform>("Assets/Prefabs/NaziBullet.prefab");
         characterGunController.bulletSpread = 0f;
         characterGunController.delayBetweenShots = 1f;
+        characterGunController.bulletSpeed = 1400f;
         characterDeathHandler.bodyPrefab = GetAsset<Transform>("Assets/Prefabs/NaziBody.prefab");
         input = main.AddComponent<CharacterInputAI>();
     }

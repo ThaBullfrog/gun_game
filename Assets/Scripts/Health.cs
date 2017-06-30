@@ -24,6 +24,7 @@ public class Health : MonoBehaviour, IDamageable, IDeathAlert
         }
     }
     private int maxHp;
+    private bool dead = false;
     public event System.Action onDeath;
 
     private void Start()
@@ -54,9 +55,13 @@ public class Health : MonoBehaviour, IDamageable, IDeathAlert
 
     private void Die()
     {
-        if(onDeath != null)
+        if(!dead)
         {
-            onDeath();
+            dead = true;
+            if (onDeath != null)
+            {
+                onDeath();
+            }
         }
     }
 }
