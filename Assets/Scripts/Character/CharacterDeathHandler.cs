@@ -31,6 +31,7 @@ public class CharacterDeathHandler : MonoBehaviour, INeedsDirectionDamagedFrom
 
     private void OnDeath()
     {
+        Destroy(GetComponent<DistanceJoint2D>());
         SpawnBody();
         Destroy(gameObject);
     }

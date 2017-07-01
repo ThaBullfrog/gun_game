@@ -100,7 +100,7 @@ public class CharacterMovement : MonoBehaviour, IGroundDetector {
         Collider2D[] overlaps = Physics2D.OverlapBoxAll(testBoxPosition, testBoxSize, 0f, groundCheckLayerMask);
         foreach(Collider2D overlap in overlaps)
         {
-            if(overlap != boxColldier)
+            if(overlap != boxColldier && !overlap.isTrigger)
             {
                 return true;
             }

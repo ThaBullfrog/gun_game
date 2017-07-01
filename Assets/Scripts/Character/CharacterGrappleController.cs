@@ -43,6 +43,14 @@ public class CharacterGrappleController : MonoBehaviour, ICanDisableAirControl
                 line.SetPosition(1, Vector3.zero);
             }
         }
+        if(grappled)
+        {
+            transform.up = (joint.connectedAnchor.Vector3() - transform.position).normalized;
+        }
+        else
+        {
+            transform.up = Vector3.up;
+        }
     }
 
     private void Grapple()
