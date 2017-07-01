@@ -6,6 +6,7 @@ public class EntityNazi : EntityCharacter
 {
 
     protected ICharacterInput input;
+    protected PrefabNames prefabNames;
 
     public override void Build()
     {
@@ -14,8 +15,11 @@ public class EntityNazi : EntityCharacter
         characterGunController.bulletSpread = 0f;
         characterGunController.delayBetweenShots = 1f;
         characterGunController.bulletSpeed = 1400f;
-        characterDeathHandler.bodyPrefab = GetAsset<Transform>("Assets/Prefabs/NaziBody.prefab");
+        characterDeathHandler.bodyPrefab = GetAsset<Transform>("Assets/Prefabs/Resources/NaziBody.prefab");
         input = main.AddComponent<CharacterInputAI>();
+        prefabNames = main.AddComponent<PrefabNames>();
+        prefabNames.prefabName = "Nazi";
+        prefabNames.bodyPrefabName = "NaziBody";
     }
 
     protected override void AssignSprites()

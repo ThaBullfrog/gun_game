@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class CharacterDeathHandler : MonoBehaviour, INeedsDirectionDamagedFrom
+public class CharacterDeathHandler : MonoBehaviour, INeedsDirectionDamagedFrom, IDead
 {
     public Sprite deadFaceUp;
     public Sprite deadFaceDown;
@@ -14,6 +14,9 @@ public class CharacterDeathHandler : MonoBehaviour, INeedsDirectionDamagedFrom
     private enum FallDirection { Left, Right }
     private FallDirection fallDirection = FallDirection.Right;
 
+    public bool dead { get; private set; }
+    public GameObject body { get; private set; }
+
     public Vector2 directionDamagedFrom
     {
         set
@@ -24,19 +27,37 @@ public class CharacterDeathHandler : MonoBehaviour, INeedsDirectionDamagedFrom
 
     private void Start()
     {
-        IDeathAlert alert = this.RequireComponent<IDeathAlert>();
-        alert.onDeath += OnDeath;
+        IDeathAlert alert = GetComponent<IDeathAlert>();
+        if (alert != null)
+        {
+            alert.onDeath += OnDeath;
+        }
         directionFacing = GetComponent<IDirectionFacing>();
     }
 
     private void OnDeath()
     {
+        dead = true;
         Destroy(GetComponent<DistanceJoint2D>());
-        SpawnBody();
-        Destroy(gameObject);
+        body = SpawnBody();
+        Component[] allComponents = GetComponents<Component>();
+        foreach (Component component in allComponents)
+        {
+            if (component != this && !(component is CharacterTrack) && !(component is Transform) && !(component is PrefabNames))
+            {
+                Destroy(component);
+            }
+        }
+        foreach(Transform trans in transform)
+        {
+            if(trans != transform)
+            {
+                Destroy(trans.gameObject);
+            }
+        }
     }
 
-    private void SpawnBody()
+    private GameObject SpawnBody()
     {
         bool faceUp = true;
         if (directionFacing != null)
@@ -61,6 +82,7 @@ public class CharacterDeathHandler : MonoBehaviour, INeedsDirectionDamagedFrom
         }
         float xScale = fallDirection == FallDirection.Left ? -1f : 1f;
         body.transform.localScale = new Vector3(xScale, 1f, 1f);
+        return body;
     }
 
     private FallDirection GetDirectionFacing(IDirectionFacing detector)

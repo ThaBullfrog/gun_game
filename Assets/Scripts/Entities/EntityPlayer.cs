@@ -7,6 +7,7 @@ public class EntityPlayer : EntityCharacter
     protected ICharacterInput input;
     protected LineRenderer grappleLineRenderer;
     protected CharacterGrappleController characterGrappleController;
+    protected PrefabNames prefabNames;
 
     public override void Build()
     {
@@ -14,6 +15,9 @@ public class EntityPlayer : EntityCharacter
         input = main.AddComponent<CharacterInputKeyboard>();
         SetupGrappleLineRenderer();
         SetupCharacterGrappleController();
+        prefabNames = main.AddComponent<PrefabNames>();
+        prefabNames.prefabName = "Player";
+        prefabNames.bodyPrefabName = "PlayerBody";
     }
 
     protected virtual void SetupGrappleLineRenderer()

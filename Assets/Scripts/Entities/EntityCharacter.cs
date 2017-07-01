@@ -22,6 +22,7 @@ public class EntityCharacter : EntityBuilder
     protected CharacterAudio characterAudio;
     protected Health health;
     protected CharacterDeathHandler characterDeathHandler;
+    protected CharacterTrack characterTrack;
 
     protected string spriteBasePath = "";
     protected Sprite neutralSprite;
@@ -55,8 +56,9 @@ public class EntityCharacter : EntityBuilder
         SetupFootstepsAudioSource();
         SetupGunshotsAudioSource();
         SetupCharacterAudio();
-        health = gameObject.AddComponent<Health>();
+        health = main.AddComponent<Health>();
         SetupCharacterDeathHandler();
+        characterTrack = main.AddComponent<CharacterTrack>();
     }
 
     private void SetupHierarchy()
@@ -194,7 +196,7 @@ public class EntityCharacter : EntityBuilder
         characterDeathHandler = gameObject.AddComponent<CharacterDeathHandler>();
         characterDeathHandler.deadFaceUp = deadFaceUpSprite;
         characterDeathHandler.deadFaceDown = deadFaceDownSprite;
-        characterDeathHandler.bodyPrefab = GetAsset<Transform>("Assets/Prefabs/PlayerBody.prefab");
+        characterDeathHandler.bodyPrefab = GetAsset<Transform>("Assets/Prefabs/Resources/PlayerBody.prefab");
         characterDeathHandler.bodySpawnPoint = main.transform;
         characterDeathHandler.fallVector = new Vector2(300f, 300f);
     }
