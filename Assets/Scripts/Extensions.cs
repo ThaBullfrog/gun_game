@@ -146,4 +146,19 @@ public static class Extensions
             componentThatNeedsDirection.directionDamagedFrom = direction;
         }
     }
+
+    public static SerializableVector2 ToSerializable(this Vector2 vector)
+    {
+        return new SerializableVector2(vector);
+    }
+
+    public static SerializableVector3 ToSerializable(this Vector3 vector)
+    {
+        return new SerializableVector3(vector);
+    }
+
+    public static SerializableQuaternion ToSerializable(this Quaternion quaternion)
+    {
+        return new SerializableQuaternion(quaternion);
+    }
 }

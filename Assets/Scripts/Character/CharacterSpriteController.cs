@@ -12,6 +12,7 @@ public class CharacterSpriteController : MonoBehaviour, IDirectionFacing
     public Sprite jumpSprite;
     
     private IGroundDetector groundDetector;
+    private IGrappleInfo grappleInfo;
     private ICharacterInput input;
     private ICharacterAudio characetAudio;
     private enum Foot { Left, Right }
@@ -63,6 +64,7 @@ public class CharacterSpriteController : MonoBehaviour, IDirectionFacing
 
     private void Start()
     {
+        grappleInfo = GetComponent<IGrappleInfo>();
         sprite = neutralSprite;
         UpdateXPositionWhenLastAnimated();
         groundDetector = GetComponent<IGroundDetector>();
@@ -89,6 +91,15 @@ public class CharacterSpriteController : MonoBehaviour, IDirectionFacing
         else
         {
             sprite = jumpSprite;
+        }
+        bool grappled = grappleInfo != null ? grappleInfo.grappled : false;
+        if (grappleInfo != null && grappled && !onGround)
+        {
+            spriteRenderer.transform.up = grappleInfo.direction.Vector3();
+        }
+        else
+        {
+            spriteRenderer.transform.up = Vector3.up;
         }
         if (updateGunPosition != null)
         {

@@ -2,18 +2,34 @@
 using System.Collections;
 using UnityEngine;
 
-public class CharacterGrappleController : MonoBehaviour, ICanDisableAirControl
+public class CharacterGrappleController : MonoBehaviour, ICanDisableAirControl, IGrappleInfo
 {
 
     public LayerMask grappleLayerMask;
     public LineRenderer line;
 
     private ICharacterInput input;
-    private bool grappled = false;
+    public bool grappled { get; private set; }
     private DistanceJoint2D joint = null;
+
+    public Vector2 direction
+    {
+        get
+        {
+            if(!grappled)
+            {
+                return Vector2.up;
+            }
+            else
+            {
+                return (joint.connectedAnchor - transform.position.Vector2()).normalized;
+            }
+        }
+    }
 
     private void Start()
     {
+        grappled = false;
         input = GetComponent<ICharacterInput>();
     }
 
@@ -42,14 +58,6 @@ public class CharacterGrappleController : MonoBehaviour, ICanDisableAirControl
                 line.SetPosition(0, Vector3.zero);
                 line.SetPosition(1, Vector3.zero);
             }
-        }
-        if(grappled)
-        {
-            transform.up = (joint.connectedAnchor.Vector3() - transform.position).normalized;
-        }
-        else
-        {
-            transform.up = Vector3.up;
         }
     }
 

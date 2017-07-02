@@ -8,19 +8,23 @@ public class SceneData
 {
     public CharacterData player;
     public List<CharacterData> characters;
+    public List<CheckpointData> checkpoints;
 }
 
 [Serializable]
 public class CharacterData
 {
-    public float locationX;
-    public float locationY;
-    public float rotationX;
-    public float rotationY;
-    public float rotationZ;
-    public float rotationW;
+    public SerializableVector2 location;
+    public SerializableQuaternion rotation;
     public bool dead;
     public string prefabName;
     public string bodyPrefabName;
     public bool facingRight;
+}
+
+[Serializable]
+public class CheckpointData
+{
+    public SerializableVector2 location;
+    public bool active;
 }

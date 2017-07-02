@@ -6,11 +6,11 @@ public class CharacterTrack : MonoBehaviour
 {
     private void Start()
     {
-        CharacterTracker.AddCharacterReference(gameObject);
+        SavedObjectsTracker.AddCharacterReference(gameObject);
     }
 
     private void OnDestroy()
     {
-        CharacterTracker.RemoveCharacterReference(gameObject);
+        SavedObjectsTracker.RemoveCharacterReference(gameObject);
     }
 }

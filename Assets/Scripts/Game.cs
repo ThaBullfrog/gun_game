@@ -13,11 +13,14 @@ public class Game : MonoBehaviour
     public static Transform clones { get; private set; }
     public static GameObject player { get { return obj.thePlayer; } set { obj.thePlayer = value; } }
 
+    private bool firstOnGUI = true;
+
     private void Awake()
     {
         if(obj == null)
         {
             obj = this;
+            //SceneManager.sceneLoaded += OnLevelLoaded;
         }
         else if(obj != this)
         {
@@ -25,7 +28,8 @@ public class Game : MonoBehaviour
         }
         if (obj == null || obj == this)
         {
-            StartCoroutine(WaitSecondsThenExecute(0.5f, LoadIfSaveAvailable));
+            LoadingScreen.Show();
+            StartCoroutine(WaitSecondsThenExecute(1f, LoadIfSaveAvailable));
         }
     }
 
@@ -46,48 +50,53 @@ public class Game : MonoBehaviour
         {
             RestartLevel();
         }
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            Save();
-        }
     }
 
     public static void RestartLevel()
     {
+        if(!SaveAvailable())
+        {
+            Destroy(obj.gameObject);
+        }
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private IEnumerator WaitSecondsThenExecute(float seconds, System.Action func)
     {
-        yield return new WaitForSeconds(seconds);
+        yield return new WaitForSecondsRealtime(seconds);
         if(func != null)
         {
             func();
         }
     }
 
-    public void LoadIfSaveAvailable()
+    public static bool SaveAvailable()
     {
-        if (File.Exists(Application.persistentDataPath + "/save.dat"))
+        return File.Exists(Application.persistentDataPath + "/save.dat");
+    }
+
+    public static void LoadIfSaveAvailable()
+    {
+        if (SaveAvailable())
         {
-            CharacterTracker.DestroyAllCharacters();
+            SavedObjectsTracker.DestroyAllSavedObjects();
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "/save.dat", FileMode.Open);
             SceneData data = (SceneData)bf.Deserialize(file);
             file.Close();
             foreach (CharacterData characterData in data.characters)
             {
-                Vector3 location = new Vector3(characterData.locationX, characterData.locationY, 0f);
-                Quaternion rotation = new Quaternion(characterData.rotationX, characterData.rotationY, characterData.rotationZ, characterData.rotationW);
+                Vector3 location = characterData.location.regular.Vector3();
+                Quaternion rotation = characterData.rotation.regular;
                 if (!characterData.dead)
                 {
                     GameObject prefab = Resources.Load<GameObject>(characterData.prefabName);
                     GameObject obj = Instantiate(prefab, location, rotation);
-                    if(data.player == characterData)
+                    if (data.player == characterData)
                     {
                         Game.player = obj;
                         CameraFollow mainCamFollow = Camera.main.GetComponent<CameraFollow>();
-                        if(mainCamFollow != null)
+                        if (mainCamFollow != null)
                         {
                             mainCamFollow.objectToFollow = obj.transform;
                         }
@@ -100,18 +109,27 @@ public class Game : MonoBehaviour
                 }
                 else
                 {
-                    Transform prefab = Resources.Load<Transform>(characterData.bodyPrefabName); 
+                    Transform prefab = Resources.Load<Transform>(characterData.bodyPrefabName);
                     Instantiate(prefab, location, rotation);
                 }
             }
+            foreach(CheckpointData checkpointData in data.checkpoints)
+            {
+                Checkpoint checkpoint = Instantiate(Resources.Load<Transform>("Checkpoint"), checkpointData.location.regular.Vector3(), Quaternion.identity).GetComponent<Checkpoint>();
+                if(checkpointData.active)
+                {
+                    checkpoint.ActivateWithoutSave();
+                }
+            }
         }
+        LoadingScreen.Hide();
     }
 
-    public void Save()
+    public static void Save()
     {
         SceneData data = new SceneData();
         List<CharacterData> allCharacterData = new List<CharacterData>();
-        foreach(GameObject obj in CharacterTracker.characters)
+        foreach(GameObject obj in SavedObjectsTracker.characters)
         {
             CharacterData characterData = new CharacterData();
             IDead dead = obj.GetComponent<IDead>();
@@ -124,22 +142,14 @@ public class Game : MonoBehaviour
             if(dead != null && dead.dead)
             {
                 characterData.dead = true;
-                characterData.locationX = dead.body.transform.position.x;
-                characterData.locationY = dead.body.transform.position.y;
-                characterData.rotationW = dead.body.transform.rotation.w;
-                characterData.rotationX = dead.body.transform.rotation.x;
-                characterData.rotationY = dead.body.transform.rotation.y;
-                characterData.rotationZ = dead.body.transform.rotation.z;
+                characterData.location = dead.body.transform.position.Vector2().ToSerializable();
+                characterData.rotation = dead.body.transform.rotation.ToSerializable();
             }
             else
             {
                 characterData.dead = false;
-                characterData.locationX = obj.transform.position.x;
-                characterData.locationY = obj.transform.position.y;
-                characterData.rotationW = obj.transform.rotation.w;
-                characterData.rotationX = obj.transform.rotation.x;
-                characterData.rotationY = obj.transform.rotation.y;
-                characterData.rotationZ = obj.transform.rotation.z;
+                characterData.location = obj.transform.position.Vector2().ToSerializable();
+                characterData.rotation = obj.transform.rotation.ToSerializable();
             }
             if(player == obj)
             {
@@ -153,9 +163,36 @@ public class Game : MonoBehaviour
             allCharacterData.Add(characterData);
         }
         data.characters = allCharacterData;
+        List<CheckpointData> allCheckpointData = new List<CheckpointData>();
+        foreach(GameObject obj in SavedObjectsTracker.checkpoints)
+        {
+            Checkpoint checkpoint = obj.GetComponent<Checkpoint>();
+            if(checkpoint != null)
+            {
+                CheckpointData checkpointData = new CheckpointData();
+                checkpointData.location = checkpoint.transform.position.Vector2().ToSerializable();
+                checkpointData.active = checkpoint.active;
+                allCheckpointData.Add(checkpointData);
+            }
+        }
+        data.checkpoints = allCheckpointData;
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Create(Application.persistentDataPath + "/save.dat");
         bf.Serialize(file, data);
         file.Close();
+    }
+
+    public static void DeleteSave()
+    {
+        File.Delete(Application.persistentDataPath + "/save.dat");
+    }
+
+    private void OnGUI()
+    {
+        if(firstOnGUI)
+        {
+            firstOnGUI = false;
+            GUIUtils.SetupGUIStyles();
+        }
     }
 }
