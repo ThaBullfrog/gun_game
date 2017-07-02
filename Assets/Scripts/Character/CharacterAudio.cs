@@ -7,6 +7,7 @@ public class CharacterAudio : MonoBehaviour, ICharacterAudio
     public AudioSource gunshot;
     public AudioSource jump;
     public AudioSource footsteps;
+    public AudioSource grappleConnect;
     public AudioClip[] footstepClips;
     public AudioClip death;
 
@@ -28,12 +29,16 @@ public class CharacterAudio : MonoBehaviour, ICharacterAudio
 
     public void PlayFootstep()
     {
-        if(footstepClips.Length > 0)
+        if (footstepClips == null)
+        {
+
+        }
+        if (footstepClips.Length > 0)
         {
             footsteps.clip = footstepClips[footstepIndex];
             footsteps.Play();
             footstepIndex += 1;
-            if(footstepIndex >= footstepClips.Length)
+            if (footstepIndex >= footstepClips.Length)
             {
                 footstepIndex = 0;
             }
@@ -48,5 +53,10 @@ public class CharacterAudio : MonoBehaviour, ICharacterAudio
     public void PlayDeath()
     {
         PlaySound.PlayClipAtPosition(death, transform.position);
+    }
+
+    public void PlayGrappleConnect()
+    {
+        grappleConnect.Play();
     }
 }

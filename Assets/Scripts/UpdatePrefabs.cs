@@ -1,10 +1,14 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 
 [DisallowMultipleComponent]
+#if UNITY_EDITOR
 [ExecuteInEditMode]
+#endif
 public class UpdatePrefabs : MonoBehaviour
 {
     public static UpdatePrefabs updatePrefabs;
@@ -15,6 +19,7 @@ public class UpdatePrefabs : MonoBehaviour
     {
         entityPrefabs = new DictionaryStringGameObject();
         updatePrefabs = this;
+#if UNITY_EDITOR
         if (!EditorApplication.isPlayingOrWillChangePlaymode)
         {
             // Get the EntityBuilder component of every prefab that has one
@@ -25,5 +30,6 @@ public class UpdatePrefabs : MonoBehaviour
             List<EntityBuilder> entities = prefabs.ConvertAll<EntityBuilder>(x => x.GetComponent<EntityBuilder>());                         // 5) Get EntityBuilder component
             entities.ForEach(x => x.SetupPrefab());
         }
+#endif
     }
 }

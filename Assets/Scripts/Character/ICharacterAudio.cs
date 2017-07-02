@@ -8,4 +8,5 @@ public interface ICharacterAudio
     void PlayFootstep();
     void PlayGunshot();
     void PlayDeath();
+    void PlayGrappleConnect();
 }

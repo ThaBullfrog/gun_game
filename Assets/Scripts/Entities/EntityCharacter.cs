@@ -19,6 +19,7 @@ public class EntityCharacter : EntityBuilder
     protected AudioSource jumpAudioSource;
     protected AudioSource footstepsAudioSource;
     protected AudioSource gunshotsAudioSource;
+    protected AudioSource grappleConnectAudioSource;
     protected CharacterAudio characterAudio;
     protected Health health;
     protected CharacterDeathHandler characterDeathHandler;
@@ -38,6 +39,7 @@ public class EntityCharacter : EntityBuilder
     protected AudioClip[] footstepClips;
     protected AudioClip gunshotClip;
     protected AudioClip deathClip;
+    protected AudioClip grappleConnectClip;
 
     public override void Build()
     {
@@ -55,6 +57,7 @@ public class EntityCharacter : EntityBuilder
         SetupJumpAudioSource();
         SetupFootstepsAudioSource();
         SetupGunshotsAudioSource();
+        SetupGrappleConnectAudioSource();
         SetupCharacterAudio();
         health = main.AddComponent<Health>();
         SetupCharacterDeathHandler();
@@ -162,6 +165,12 @@ public class EntityCharacter : EntityBuilder
         gunshotsAudioSource.clip = gunshotClip;
     }
 
+    private void SetupGrappleConnectAudioSource()
+    {
+        grappleConnectAudioSource = main.AddAudioSource();
+        grappleConnectAudioSource.clip = grappleConnectClip;
+    }
+
     protected virtual void AssignClips()
     {
         if (clipBasePath == "")
@@ -174,6 +183,7 @@ public class EntityCharacter : EntityBuilder
         footstepClips[1] = GetClip("footstep01.wav");
         gunshotClip = GetClip("gunshot2.ogg");
         deathClip = GetClip("death.ogg");
+        grappleConnectClip = GetClip("grapple_connect.ogg");
     }
 
     private AudioClip GetClip(string path)
@@ -189,6 +199,7 @@ public class EntityCharacter : EntityBuilder
         characterAudio.footsteps = footstepsAudioSource;
         characterAudio.footstepClips = footstepClips;
         characterAudio.death = deathClip;
+        characterAudio.grappleConnect = grappleConnectAudioSource;
     }
 
     private void SetupCharacterDeathHandler()

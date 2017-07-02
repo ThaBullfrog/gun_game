@@ -11,6 +11,7 @@ public class CharacterGrappleController : MonoBehaviour, ICanDisableAirControl, 
     private ICharacterInput input;
     public bool grappled { get; private set; }
     private DistanceJoint2D joint = null;
+    private ICharacterAudio characterAudio;
 
     public Vector2 direction
     {
@@ -31,6 +32,7 @@ public class CharacterGrappleController : MonoBehaviour, ICanDisableAirControl, 
     {
         grappled = false;
         input = GetComponent<ICharacterInput>();
+        characterAudio = GetComponent<ICharacterAudio>();
     }
 
     private void Update()
@@ -50,8 +52,8 @@ public class CharacterGrappleController : MonoBehaviour, ICanDisableAirControl, 
         {
             if (grappled)
             {
-                line.SetPosition(0, transform.position);
-                line.SetPosition(1, joint.connectedAnchor);
+                line.SetPosition(0, new Vector3(transform.position.x, transform.position.y, 1f));
+                line.SetPosition(1, new Vector3(joint.connectedAnchor.x, joint.connectedAnchor.y, 1f));
             }
             else
             {
@@ -81,6 +83,10 @@ public class CharacterGrappleController : MonoBehaviour, ICanDisableAirControl, 
             joint.anchor = Vector2.zero;
             joint.connectedAnchor = hit.point;
             joint.maxDistanceOnly = true;
+            if (characterAudio != null)
+            {
+                characterAudio.PlayGrappleConnect();
+            }
         }
     }
 

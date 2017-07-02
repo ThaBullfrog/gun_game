@@ -11,6 +11,7 @@ public class EntityNazi : EntityCharacter
     public override void Build()
     {
         base.Build();
+        sprite.transform.localScale = new Vector3(-sprite.transform.localScale.x, sprite.transform.localScale.y, sprite.transform.transform.localScale.z);
         characterGunController.bulletPrefab = GetAsset<Transform>("Assets/Prefabs/NaziBullet.prefab");
         characterGunController.bulletSpread = 0f;
         characterGunController.delayBetweenShots = 1f;
@@ -24,10 +25,8 @@ public class EntityNazi : EntityCharacter
 
     protected override void AssignSprites()
     {
-        if (spriteBasePath == "")
-        {
-            spriteBasePath = "Assets/Sprites/Nazi/";
-        }
+        base.AssignSprites();
+        spriteBasePath = "Assets/Sprites/Nazi/";
         neutralSprite = GetSprite("nazi00.png");
         rightFootForwardSprite = GetSprite("nazi00.png");
         leftFootForwardSprite = GetSprite("nazi02.png");
